@@ -205,6 +205,32 @@
       transform: translateX(4px);
     }
 
+    /* === SUCCESS TOAST === */
+    #success-toast {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(120%);
+      z-index: 2000;
+      background: linear-gradient(135deg, #F26000 0%, #D94F00 100%);
+      box-shadow: 0 8px 40px rgba(242,96,0,0.50), 0 2px 12px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.15);
+      border-radius: 1rem;
+      padding: 1.1rem 1.6rem;
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      min-width: 280px;
+      max-width: calc(100vw - 2rem);
+      transition: transform 0.45s cubic-bezier(0.34, 1.45, 0.64, 1), opacity 0.3s ease;
+      opacity: 0;
+      pointer-events: none;
+    }
+    #success-toast.show {
+      transform: translateX(-50%) translateY(0%);
+      opacity: 1;
+      pointer-events: auto;
+    }
+
     /* === MODAL === */
     #schedule-modal {
       display: none;
@@ -1236,6 +1262,19 @@
 
 
   <!-- ================================================= -->
+  <!--  SUCCESS TOAST                                     -->
+  <!-- ================================================= -->
+  <div id="success-toast" role="status" aria-live="polite">
+    <div style="width:2rem;height:2rem;background:rgba(255,255,255,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;shrink:0;">
+      <svg width="16" height="16" viewBox="0 0 20 20" fill="white"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+    </div>
+    <div>
+      <div style="color:#fff;font-weight:700;font-size:0.9rem;letter-spacing:0.01em;">Request Sent Successfully!</div>
+      <div style="color:rgba(255,255,255,0.82);font-size:0.78rem;margin-top:0.15rem;">We'll reach out at your scheduled time.</div>
+    </div>
+  </div>
+
+  <!-- ================================================= -->
   <!--  SCHEDULE MODAL                                    -->
   <!-- ================================================= -->
   <div id="schedule-modal" role="dialog" aria-modal="true" aria-label="Schedule a call">
@@ -1519,10 +1558,21 @@
         document.getElementById('schedule-value').value = label;
         document.getElementById('schedule-display').classList.remove('hidden');
         closeModal();
-        // Submit the form
-        const form = document.querySelector('#contact form');
-        if (form) form.requestSubmit();
+        showSuccessToast();
+        // Reset form after short delay
+        setTimeout(() => {
+          const form = document.querySelector('#contact form');
+          if (form) form.reset();
+          document.getElementById('schedule-display').classList.add('hidden');
+          selectedDate = null; selectedTime = null;
+        }, 600);
       };
+
+      function showSuccessToast() {
+        const toast = document.getElementById('success-toast');
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 4500);
+      }
 
       window.openModal = function() {
         init();
