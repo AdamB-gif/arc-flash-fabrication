@@ -4,7 +4,7 @@ import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
 const _require = createRequire(import.meta.url);
-const puppeteer = _require('C:/Users/useri/Desktop/New folder/node_modules/puppeteer');
+const puppeteer = _require('puppeteer');
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const screenshotDir = join(__dirname, 'temporary screenshots');
@@ -21,7 +21,6 @@ const filename = label ? `screenshot-${n}-${label}.png` : `screenshot-${n}.png`;
 const outPath = join(screenshotDir, filename);
 
 const browser = await puppeteer.launch({
-  executablePath: 'C:/Users/useri/.cache/puppeteer/chrome/win64-146.0.7680.153/chrome-win64/chrome.exe',
   headless: true,
   args: ['--no-sandbox', '--disable-setuid-sandbox'],
 });
