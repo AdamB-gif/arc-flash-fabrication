@@ -205,6 +205,67 @@
       transform: translateX(4px);
     }
 
+    /* === MODAL === */
+    #schedule-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    #schedule-modal.open { display: flex; }
+    #modal-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(10,10,13,0.85);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+    }
+    #modal-card {
+      position: relative;
+      z-index: 1;
+      background: #141519;
+      border: 1px solid #2A2D38;
+      border-radius: 1.5rem;
+      padding: 2rem;
+      width: 100%;
+      max-width: 480px;
+      box-shadow: 0 0 80px rgba(242,96,0,0.08), 0 24px 64px rgba(0,0,0,0.7);
+      animation: slide-up 0.35s cubic-bezier(0.22,1,0.36,1) both;
+    }
+    /* Calendar grid */
+    .cal-day {
+      width: 2.4rem;
+      height: 2.4rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 0.5rem;
+      font-size: 0.8rem;
+      cursor: pointer;
+      color: #7A7F8E;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+    .cal-day:hover:not(.cal-empty):not(.cal-past) { background: rgba(242,96,0,0.12); color: #F0F2F5; }
+    .cal-day.cal-selected { background: #F26000; color: #fff; box-shadow: 0 0 16px rgba(242,96,0,0.4); }
+    .cal-day.cal-today { border: 1px solid rgba(242,96,0,0.45); color: #F0F2F5; }
+    .cal-day.cal-past { opacity: 0.25; cursor: default; pointer-events: none; }
+    .cal-day.cal-empty { cursor: default; pointer-events: none; }
+    .time-slot {
+      padding: 0.5rem 0.85rem;
+      border-radius: 0.6rem;
+      border: 1px solid #2A2D38;
+      font-size: 0.78rem;
+      color: #7A7F8E;
+      cursor: pointer;
+      transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+      background: #0A0A0D;
+    }
+    .time-slot:hover { border-color: rgba(242,96,0,0.5); color: #F0F2F5; }
+    .time-slot.selected { border-color: #F26000; background: rgba(242,96,0,0.1); color: #F26000; }
+
     /* === SCROLL REVEAL === */
     .reveal {
       opacity: 0;
@@ -280,10 +341,10 @@
         "telephone": "",
         "address": {
           "@type": "PostalAddress",
-          "streetAddress": "",
-          "addressLocality": "Pinellas Park",
+          "streetAddress": "8100 Bryan Dairy Road",
+          "addressLocality": "Seminole",
           "addressRegion": "FL",
-          "postalCode": "33781",
+          "postalCode": "33777",
           "addressCountry": "US"
         },
         "geo": {
@@ -296,12 +357,6 @@
             "@type": "OpeningHoursSpecification",
             "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday"],
             "opens": "07:00",
-            "closes": "18:00"
-          },
-          {
-            "@type": "OpeningHoursSpecification",
-            "dayOfWeek": "Saturday",
-            "opens": "08:00",
             "closes": "15:00"
           }
         ],
@@ -324,7 +379,7 @@
           "itemListElement": [
             {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Custom Trailer Fabrication", "description": "Flatbed, dump, utility, car hauler, food, and concession trailers built from raw C-channel and steel tubing to your exact specifications."}},
             {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Trailer Frame Repair", "description": "Cracked frame repair, gusset welding, axle replacement, floor replacement, coupler and ramp repair."}},
-            {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Buy & Sell Used Trailers", "description": "Cash offers on used trailers of any condition. We also sell inspected, repaired used trailers."}},
+            {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Van & Trailer Conversions", "description": "Van conversions, trailer conversions, and custom modifications to existing trailers and vehicles."}},
             {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Custom BBQ Smoker Fabrication", "description": "Offset, reverse flow, vertical, and trailer-mounted competition smokers built from heavy plate steel."}},
             {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Custom Metal Fabrication", "description": "Bar railings, driveway gates, ornamental iron, outdoor kitchen frames, stainless countertops, and all custom metalwork."}}
           ]
@@ -366,12 +421,7 @@
           {
             "@type": "Question",
             "name": "What welding processes does Arc Flash Fabrication use?",
-            "acceptedAnswer": {"@type": "Answer", "text": "We use MIG (GMAW), TIG (GTAW), and stick (SMAW) welding depending on the material and application. MIG for production trailer work, TIG for stainless steel bar tops and precision joints, stick for heavy repair work. We weld mild steel, aluminum, and stainless steel."}
-          },
-          {
-            "@type": "Question",
-            "name": "Do you work on boat trailers?",
-            "acceptedAnswer": {"@type": "Answer", "text": "Yes — we repair and modify boat trailers including bunk replacement, frame repair, winch post fabrication, and full custom boat trailer builds. Florida's salt environment is hard on trailer steel and we see a lot of boat trailer repair work across Tampa Bay."}
+            "acceptedAnswer": {"@type": "Answer", "text": "We use MIG (GMAW) and stick (SMAW) welding depending on the material and job. MIG is our primary process for trailer fabrication — fast and strong on mild steel. Stick welding is used for heavy repair work and thick plate. We work in mild steel and stainless steel."}
           }
         ]
       }
@@ -489,8 +539,7 @@
       <!-- Headline -->
       <h1 class="anim-slide-up d2 font-display font-black leading-none tracking-tightest mb-6"
           style="font-size: clamp(3.2rem, 10vw, 7.2rem);">
-        BUILT FROM<br>
-        <span class="text-arc-orange glow-orange">SCRATCH.</span><br>
+        <span class="text-arc-orange glow-orange">ARC FLASH</span><br>
         <span id="cycle-slot" class="cycle-slot" aria-live="polite" aria-atomic="true">
           <!-- Animated phrases injected by JS -->
         </span>
@@ -498,9 +547,8 @@
 
       <!-- Sub -->
       <p class="anim-slide-up d3 text-arc-muted text-lg md:text-xl max-w-2xl mx-auto leading-[1.72] mb-10">
-        Custom trailer fabrication, frame-up repairs, and all metal services —
-        and <strong class="text-arc-light font-semibold">we buy your used trailers for cash</strong>.
-        The only shop in Tampa Bay that does all three under one roof.
+        Custom trailer fabrication, frame-up repairs, and all metal services.
+        The only shop in Tampa Bay that does it all under one roof.
       </p>
 
       <!-- CTAs -->
@@ -509,9 +557,9 @@
            class="btn-primary text-white font-bold text-base px-8 py-4 rounded-xl w-full sm:w-auto">
           Get a Free Estimate &rarr;
         </a>
-        <a href="#contact"
+        <a href="#builds"
            class="btn-outline text-arc-light font-semibold text-base px-8 py-4 rounded-xl w-full sm:w-auto">
-          We Buy Trailers &mdash; Cash Offer
+          See What We Build
         </a>
       </div>
 
@@ -519,11 +567,11 @@
       <div class="anim-fade-in d5 mt-14 grid grid-cols-2 md:flex md:flex-wrap md:items-center md:justify-center gap-4 md:gap-10">
         <div class="flex items-center justify-center gap-2 text-arc-muted text-sm">
           <span class="text-arc-orange text-base">✦</span>
-          <span>MIG &middot; TIG &middot; Stick Welding</span>
+          <span>MIG &middot; Stick Welding</span>
         </div>
         <div class="flex items-center justify-center gap-2 text-arc-muted text-sm">
           <span class="text-arc-orange text-base">✦</span>
-          <span>Mild Steel &middot; Aluminum &middot; Stainless</span>
+          <span>Mild Steel &middot; Stainless Steel</span>
         </div>
         <div class="flex items-center justify-center gap-2 text-arc-muted text-sm">
           <span class="text-arc-orange text-base">✦</span>
@@ -566,12 +614,12 @@
           ONE SHOP.<br>EVERYTHING METAL.
         </h2>
         <p class="text-arc-muted text-lg max-w-xl leading-relaxed reveal reveal-delay-1">
-          We're not a dealer that can't weld, or a welder that can't sell. Arc Flash is the only Tampa Bay shop where you can buy, build, sell, and repair — all in one place.
+          We build and repair custom trailers — any and all structural repairs. We don't only work on trailers, but any metal fabrication project brought in. We can also provide a mobile welder to service your job on-site.
         </p>
       </div>
 
-      <!-- 4 Cards -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+      <!-- 3 Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
 
         <!-- Card 1 -->
         <div class="service-card bg-arc-plate rounded-2xl p-7 flex flex-col gap-5 reveal">
@@ -605,7 +653,7 @@
           </div>
           <div>
             <h3 class="font-display font-bold text-2xl text-arc-light tracking-tight mb-2">Trailer Repair &amp; Restoration</h3>
-            <p class="text-arc-muted text-sm leading-relaxed">Cracked frames, rotted floors, bad axles, wiring, brakes, ramps, couplers — we fix what others won't. Structural welds done right, not surface-patched.</p>
+            <p class="text-arc-muted text-sm leading-relaxed">Cracked frames, rotted floors, bad axles, wiring, brakes, ramps, couplers — we fix what others won't. Custom lighting solutions from rear/marker lights to custom light bars and other electrical accessories. Van and trailer conversions available. Structural welds done right, not surface-patched.</p>
           </div>
           <div class="mt-auto pt-3 border-t border-arc-rim flex flex-wrap gap-2">
             <span class="text-[11px] text-arc-orange bg-arc-orange/10 px-2.5 py-1 rounded-full">Frame Repair</span>
@@ -614,28 +662,8 @@
           </div>
         </div>
 
-        <!-- Card 3 (featured) -->
-        <div class="service-card bg-arc-plate rounded-2xl p-7 flex flex-col gap-5 relative overflow-hidden reveal reveal-delay-2">
-          <div class="absolute top-0 right-0 bg-arc-orange text-white text-[10px] font-bold px-3 py-1.5 rounded-bl-xl tracking-widest uppercase">Cash Offers</div>
-          <div class="w-11 h-11 rounded-xl bg-arc-orange/10 border border-arc-orange/25 flex items-center justify-center shrink-0">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#F26000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="12" y1="1" x2="12" y2="23"/>
-              <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
-            </svg>
-          </div>
-          <div>
-            <h3 class="font-display font-bold text-2xl text-arc-light tracking-tight mb-2">We Buy &amp; Sell Trailers</h3>
-            <p class="text-arc-muted text-sm leading-relaxed">Selling your trailer? We give fast, fair cash offers — running or not. Looking to buy? We carry inspected, repaired used trailers ready to work today.</p>
-          </div>
-          <div class="mt-auto pt-3 border-t border-arc-rim flex flex-wrap gap-2">
-            <span class="text-[11px] text-arc-orange bg-arc-orange/10 px-2.5 py-1 rounded-full">Fast Cash Offer</span>
-            <span class="text-[11px] text-arc-orange bg-arc-orange/10 px-2.5 py-1 rounded-full">Any Condition</span>
-            <span class="text-[11px] text-arc-orange bg-arc-orange/10 px-2.5 py-1 rounded-full">Used Inventory</span>
-          </div>
-        </div>
-
-        <!-- Card 4 -->
-        <div class="service-card bg-arc-plate rounded-2xl p-7 flex flex-col gap-5 reveal reveal-delay-3">
+        <!-- Card 3 -->
+        <div class="service-card bg-arc-plate rounded-2xl p-7 flex flex-col gap-5 reveal reveal-delay-2">
           <div class="w-11 h-11 rounded-xl bg-arc-orange/10 border border-arc-orange/25 flex items-center justify-center shrink-0">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#F26000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
@@ -687,7 +715,7 @@
         <div class="build-item relative bg-arc-plate border border-arc-rim rounded-2xl aspect-square flex flex-col items-center justify-center p-6 text-center cursor-default reveal">
           <div class="text-3xl mb-3" aria-hidden="true">🔩</div>
           <div class="font-display font-bold text-lg text-arc-light tracking-tight">Flatbed Trailers</div>
-          <div class="text-arc-muted text-xs mt-1.5 leading-relaxed">Steel &amp; aluminum, any length</div>
+          <div class="text-arc-muted text-xs mt-1.5 leading-relaxed">Steel, any length &amp; load rating</div>
           <div class="build-overlay absolute inset-0 bg-arc-orange/8 border border-arc-orange/30 rounded-2xl"></div>
         </div>
 
@@ -743,22 +771,6 @@
 
       </div>
 
-      <!-- Conversion callout -->
-      <div class="mt-8 bg-arc-steel border border-arc-orange/20 rounded-2xl p-7 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 reveal"
-           style="box-shadow:0 0 50px rgba(242,96,0,0.05);">
-        <div>
-          <div class="text-arc-orange text-[10px] font-bold tracking-[0.2em] uppercase mb-2">Popular Service</div>
-          <h3 class="font-display font-bold text-2xl text-arc-light tracking-tight mb-1.5">
-            Convert Your Utility Trailer to a Dump Trailer
-          </h3>
-          <p class="text-arc-muted text-sm leading-relaxed max-w-lg">
-            Add a hydraulic dump kit, extend the sides, add ramps, or fully rework an existing trailer. We modify what you have instead of starting over — saving you money.
-          </p>
-        </div>
-        <a href="#contact" class="btn-primary text-white font-semibold text-sm px-6 py-3.5 rounded-xl whitespace-nowrap shrink-0">
-          Ask About Conversions
-        </a>
-      </div>
 
     </div>
   </section>
@@ -768,88 +780,50 @@
   <!--  WHY ARC FLASH                                     -->
   <!-- ================================================= -->
   <section class="relative py-24 bg-arc-steel">
-    <div class="max-w-7xl mx-auto px-6">
-      <div class="grid lg:grid-cols-2 gap-16 items-center">
+    <div class="max-w-4xl mx-auto px-6">
 
-        <!-- Left -->
-        <div>
-          <div class="flex items-center gap-3 mb-4">
-            <div class="h-px w-8 bg-arc-orange"></div>
-            <span class="text-arc-orange text-[11px] font-semibold tracking-[0.2em] uppercase">Why Arc Flash</span>
+      <div class="flex items-center gap-3 mb-4">
+        <div class="h-px w-8 bg-arc-orange"></div>
+        <span class="text-arc-orange text-[11px] font-semibold tracking-[0.2em] uppercase">Why Arc Flash</span>
+      </div>
+      <h2 class="font-display font-black tracking-tightest text-arc-light leading-none mb-12 reveal"
+          style="font-size: clamp(2.4rem,5.5vw,3.8rem);">
+        BUILT RIGHT.<br>
+        <span class="text-arc-orange">EVERY TIME.</span>
+      </h2>
+
+      <div class="space-y-4">
+
+        <div class="feature-row bg-arc-dark rounded-2xl p-6 flex gap-4 items-start reveal">
+          <div class="w-8 h-8 rounded-lg bg-arc-orange/15 flex items-center justify-center shrink-0 mt-0.5">
+            <svg width="15" height="15" fill="#F26000" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
           </div>
-          <h2 class="font-display font-black tracking-tightest text-arc-light leading-none mb-6 reveal"
-              style="font-size: clamp(2.4rem,5.5vw,3.8rem);">
-            THE ONLY SHOP<br>
-            <span class="text-arc-orange">THAT DOES ALL OF IT</span>
-          </h2>
-          <p class="text-arc-muted text-lg leading-[1.72] mb-10 reveal reveal-delay-1">
-            Every other fabricator in Pinellas, Pasco, and Clearwater does one thing — they weld, or they sell, or they repair. We do all three, plus custom metalwork that nobody else in Tampa Bay is even advertising.
-          </p>
-
-          <div class="grid grid-cols-2 gap-4 reveal reveal-delay-2">
-            <div class="bg-arc-dark rounded-2xl p-6 border border-arc-rim">
-              <div class="font-display font-black text-4xl text-arc-orange glow-orange mb-1">3-in-1</div>
-              <div class="text-arc-muted text-sm leading-relaxed">Buy &middot; Build &middot; Repair<br>under one roof</div>
-            </div>
-            <div class="bg-arc-dark rounded-2xl p-6 border border-arc-rim">
-              <div class="font-display font-black text-4xl text-arc-orange glow-orange mb-1">All</div>
-              <div class="text-arc-muted text-sm leading-relaxed">Metal types &amp; gauges:<br>mild, stainless, aluminum</div>
-            </div>
-            <div class="bg-arc-dark rounded-2xl p-6 border border-arc-rim">
-              <div class="font-display font-black text-4xl text-arc-orange glow-orange mb-1">Fast</div>
-              <div class="text-arc-muted text-sm leading-relaxed">Same-day estimates,<br>honest turnaround times</div>
-            </div>
-            <div class="bg-arc-dark rounded-2xl p-6 border border-arc-rim">
-              <div class="font-display font-black text-4xl text-arc-orange glow-orange mb-1">Fair</div>
-              <div class="text-arc-muted text-sm leading-relaxed">Cash offers on trailers,<br>no middleman markup</div>
-            </div>
+          <div>
+            <div class="font-semibold text-arc-light text-base mb-1">We Fabricate Trailers From Raw Steel</div>
+            <div class="text-arc-muted text-sm leading-relaxed">Not assembled from kits. We start with C-channel, square tube, and angle iron and build to your exact dimensions and load rating.</div>
           </div>
         </div>
 
-        <!-- Right -->
-        <div class="space-y-4">
-
-          <div class="feature-row bg-arc-dark rounded-2xl p-5 flex gap-4 items-start reveal">
-            <div class="w-8 h-8 rounded-lg bg-arc-orange/15 flex items-center justify-center shrink-0 mt-0.5">
-              <svg width="15" height="15" fill="#F26000" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-            </div>
-            <div>
-              <div class="font-semibold text-arc-light text-sm mb-1">We Fabricate Trailers From Raw Steel</div>
-              <div class="text-arc-muted text-sm leading-relaxed">Not assembled from kits. We start with C-channel, square tube, and angle iron and build to your exact dimensions and load rating.</div>
-            </div>
+        <div class="feature-row bg-arc-dark rounded-2xl p-6 flex gap-4 items-start reveal reveal-delay-1">
+          <div class="w-8 h-8 rounded-lg bg-arc-orange/15 flex items-center justify-center shrink-0 mt-0.5">
+            <svg width="15" height="15" fill="#F26000" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
           </div>
-
-          <div class="feature-row bg-arc-dark rounded-2xl p-5 flex gap-4 items-start reveal reveal-delay-1">
-            <div class="w-8 h-8 rounded-lg bg-arc-orange/15 flex items-center justify-center shrink-0 mt-0.5">
-              <svg width="15" height="15" fill="#F26000" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-            </div>
-            <div>
-              <div class="font-semibold text-arc-light text-sm mb-1">Cracked Frame? We Repair It Properly</div>
-              <div class="text-arc-muted text-sm leading-relaxed">Full structural weld repairs with proper gussets and reinforcement — not just a bead run over the surface crack. Assessed, stripped, rebuilt right.</div>
-            </div>
+          <div>
+            <div class="font-semibold text-arc-light text-base mb-1">Cracked Frame? We Repair It Properly</div>
+            <div class="text-arc-muted text-sm leading-relaxed">Full structural weld repairs with proper gussets and reinforcement — not just a bead run over the surface crack. Assessed, stripped, rebuilt right.</div>
           </div>
-
-          <div class="feature-row bg-arc-dark rounded-2xl p-5 flex gap-4 items-start reveal reveal-delay-2">
-            <div class="w-8 h-8 rounded-lg bg-arc-orange/15 flex items-center justify-center shrink-0 mt-0.5">
-              <svg width="15" height="15" fill="#F26000" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-            </div>
-            <div>
-              <div class="font-semibold text-arc-light text-sm mb-1">Smokers, Gates, Bar Builds &amp; Custom Metal</div>
-              <div class="text-arc-muted text-sm leading-relaxed">Custom BBQ smoker fabrication, driveway gate fabrication, bar foot rails, stainless countertops, ornamental iron, outdoor kitchen frames — the custom metal jobs nobody else in Tampa Bay is taking on.</div>
-            </div>
-          </div>
-
-          <div class="feature-row bg-arc-dark rounded-2xl p-5 flex gap-4 items-start reveal reveal-delay-3">
-            <div class="w-8 h-8 rounded-lg bg-arc-orange/15 flex items-center justify-center shrink-0 mt-0.5">
-              <svg width="15" height="15" fill="#F26000" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-            </div>
-            <div>
-              <div class="font-semibold text-arc-light text-sm mb-1">Fast Cash for Your Used Trailer</div>
-              <div class="text-arc-muted text-sm leading-relaxed">Running or not, we buy used trailers of all types. We inspect, repair, and resell — so we can give fair market offers without wasting your time.</div>
-            </div>
-          </div>
-
         </div>
+
+        <div class="feature-row bg-arc-dark rounded-2xl p-6 flex gap-4 items-start reveal reveal-delay-2">
+          <div class="w-8 h-8 rounded-lg bg-arc-orange/15 flex items-center justify-center shrink-0 mt-0.5">
+            <svg width="15" height="15" fill="#F26000" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+          </div>
+          <div>
+            <div class="font-semibold text-arc-light text-base mb-1">Smokers, Gates, Bar Builds &amp; Custom Metal</div>
+            <div class="text-arc-muted text-sm leading-relaxed">Custom BBQ smoker fabrication, driveway gate fabrication, bar foot rails, stainless countertops, ornamental iron, outdoor kitchen frames — the custom metal jobs nobody else in Tampa Bay is taking on.</div>
+          </div>
+        </div>
+
       </div>
     </div>
   </section>
@@ -918,16 +892,6 @@
           </div>
         </div>
 
-        <div class="faq-item bg-arc-steel border border-arc-rim rounded-2xl overflow-hidden reveal reveal-delay-1">
-          <button class="faq-btn w-full flex items-center justify-between p-6 text-left gap-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-arc-orange">
-            <span class="font-semibold text-arc-light text-sm md:text-base">I want to sell my trailer — how does that work?</span>
-            <svg class="faq-icon shrink-0 text-arc-orange" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><polyline points="5 8 10 13 15 8"/></svg>
-          </button>
-          <div class="faq-body">
-            <p class="px-6 pb-6 text-arc-muted text-sm leading-relaxed">Simple. Bring it by or send us photos and basic info (length, axles, condition). We inspect it and give you a fair cash offer based on current market value and repair cost — usually same day. If you accept, we pay on the spot. We buy flatbeds, dump trailers, utility trailers, car haulers, and most other types, running or not.</p>
-          </div>
-        </div>
-
         <div class="faq-item bg-arc-steel border border-arc-rim rounded-2xl overflow-hidden reveal reveal-delay-2">
           <button class="faq-btn w-full flex items-center justify-between p-6 text-left gap-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-arc-orange">
             <span class="font-semibold text-arc-light text-sm md:text-base">Mild steel vs. aluminum — which is better for a trailer in Florida?</span>
@@ -980,21 +944,11 @@
 
         <div class="faq-item bg-arc-steel border border-arc-rim rounded-2xl overflow-hidden reveal reveal-delay-1">
           <button class="faq-btn w-full flex items-center justify-between p-6 text-left gap-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-arc-orange">
-            <span class="font-semibold text-arc-light text-sm md:text-base">What welding processes do you use — MIG, TIG, or stick?</span>
+            <span class="font-semibold text-arc-light text-sm md:text-base">What welding processes do you use — MIG or stick?</span>
             <svg class="faq-icon shrink-0 text-arc-orange" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><polyline points="5 8 10 13 15 8"/></svg>
           </button>
           <div class="faq-body">
-            <p class="px-6 pb-6 text-arc-muted text-sm leading-relaxed">We use MIG (GMAW), TIG (GTAW), and stick (SMAW) depending on the material and job. MIG is our primary process for trailer fabrication — fast and strong on mild steel. TIG is used for stainless steel bar tops, food-grade work, and any joint requiring a clean, precise weld. Stick welding is used for heavy repair work and thick plate. We work in mild steel, aluminum, and stainless steel and choose the right process for each application.</p>
-          </div>
-        </div>
-
-        <div class="faq-item bg-arc-steel border border-arc-rim rounded-2xl overflow-hidden reveal reveal-delay-2">
-          <button class="faq-btn w-full flex items-center justify-between p-6 text-left gap-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-arc-orange">
-            <span class="font-semibold text-arc-light text-sm md:text-base">Do you work on boat trailers?</span>
-            <svg class="faq-icon shrink-0 text-arc-orange" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><polyline points="5 8 10 13 15 8"/></svg>
-          </button>
-          <div class="faq-body">
-            <p class="px-6 pb-6 text-arc-muted text-sm leading-relaxed">Yes — Florida's salt air and boat ramps are brutal on trailer steel. We repair and modify boat trailers: bunk boards, winch posts, frame cracks, coupler replacement, and full frame rebuilds. We also fabricate custom boat trailer frames from scratch for builds that need specific hull support. With Tampa Bay and the Gulf Coast right in our backyard, boat trailer work is one of our most common repair jobs.</p>
+            <p class="px-6 pb-6 text-arc-muted text-sm leading-relaxed">We use MIG (GMAW) and stick (SMAW) depending on the material and job. MIG is our primary process for trailer fabrication — fast and strong on mild steel. Stick welding is used for heavy repair work and thick plate. We work in mild steel and stainless steel and choose the right process for each application.</p>
           </div>
         </div>
 
@@ -1060,10 +1014,10 @@
               </div>
             </div>
             <div class="bg-arc-dark rounded-xl p-4 border border-arc-rim">
-              <div class="text-arc-orange font-semibold text-xs mb-2 tracking-wider uppercase">And Beyond</div>
+              <div class="text-arc-orange font-semibold text-xs mb-2 tracking-wider uppercase">Hernando County</div>
               <div class="text-arc-muted text-xs space-y-1 leading-relaxed">
-                <div>Hernando County</div>
-                <div>Manatee County</div>
+                <div>Spring Hill &middot; Brooksville</div>
+                <div>Weeki Wachee</div>
                 <div>Call for distance quotes</div>
               </div>
             </div>
@@ -1078,25 +1032,21 @@
             <div class="flex items-center gap-3 mb-7">
               <div class="w-3 h-3 rounded-full bg-arc-orange shrink-0"
                    style="box-shadow:0 0 14px rgba(242,96,0,0.65); animation:pulse-glow 2s ease-in-out infinite;"></div>
-              <span class="text-arc-light font-semibold text-sm">Arc Flash HQ &mdash; Pinellas Park, FL</span>
+              <span class="text-arc-light font-semibold text-sm">Arc Flash &mdash; Seminole, FL</span>
             </div>
 
             <div class="space-y-4 text-sm text-arc-muted mb-8">
               <div class="flex gap-3 items-start">
                 <span class="text-arc-orange text-base shrink-0">📍</span>
-                <span>Pinellas Park, FL 33781</span>
-              </div>
-              <div class="flex gap-3 items-start">
-                <span class="text-arc-orange text-base shrink-0">📞</span>
-                <span>Call for free same-day estimate</span>
+                <span>8100 Bryan Dairy Road, Seminole, FL 33777</span>
               </div>
               <div class="flex gap-3 items-start">
                 <span class="text-arc-orange text-base shrink-0">🕐</span>
-                <span>Mon–Fri 7am–6pm &nbsp;&middot;&nbsp; Sat 8am–3pm</span>
+                <span>Mon–Fri 7am–3pm</span>
               </div>
               <div class="flex gap-3 items-start">
                 <span class="text-arc-orange text-base shrink-0">🚛</span>
-                <span>Mobile service available for large jobs</span>
+                <span>Mobile welding service available</span>
               </div>
             </div>
 
@@ -1188,24 +1138,41 @@
                       class="form-field w-full rounded-xl px-4 py-3.5 text-sm resize-none"></textarea>
           </div>
 
-          <button type="submit"
-                  class="btn-primary w-full text-white font-bold text-base py-4 rounded-xl">
-            Send Request &mdash; We'll Respond Same Day
-          </button>
+          <!-- Schedule a call field (populated by modal) -->
+          <div id="schedule-display" class="hidden">
+            <label class="block text-arc-muted text-[10px] font-semibold tracking-[0.18em] uppercase mb-2">Scheduled Call Time</label>
+            <div class="form-field w-full rounded-xl px-4 py-3.5 text-sm flex items-center justify-between">
+              <span id="schedule-label" class="text-arc-light"></span>
+              <button type="button" onclick="openModal()" class="text-arc-orange text-xs hover:underline">Change</button>
+            </div>
+            <input type="hidden" id="schedule-value" name="schedule">
+          </div>
+
+          <div class="grid sm:grid-cols-2 gap-3">
+            <button type="submit"
+                    class="btn-primary text-white font-bold text-base py-4 rounded-xl">
+              Send Request
+            </button>
+            <button type="button" onclick="openModal()"
+                    class="btn-outline text-arc-light font-semibold text-base py-4 rounded-xl flex items-center justify-center gap-2">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              Schedule a Call
+            </button>
+          </div>
         </form>
 
         <div class="mt-8 pt-6 border-t border-arc-rim flex flex-col sm:flex-row items-center justify-center gap-5 text-arc-muted text-xs">
           <div class="flex items-center gap-2">
             <span class="text-arc-orange">📞</span>
-            <span>Prefer to call? We answer.</span>
+            <span>Mon–Fri 7am–3pm</span>
           </div>
           <div class="flex items-center gap-2">
             <span class="text-arc-orange">⚡</span>
             <span>Same-day estimate, no obligation</span>
           </div>
           <div class="flex items-center gap-2">
-            <span class="text-arc-orange">🛠️</span>
-            <span>Serving Tampa Bay since day one</span>
+            <span class="text-arc-orange">🚛</span>
+            <span>Mobile welding available</span>
           </div>
         </div>
       </div>
@@ -1232,7 +1199,7 @@
             </div>
           </div>
           <p class="text-arc-muted text-sm leading-relaxed max-w-xs">
-            Custom metal fabrication shop in Pinellas Park, FL. We build trailers from raw steel, repair cracked frames, buy used trailers for cash, and fabricate custom smokers, gates, bar railings &amp; more. Serving all of Tampa Bay.
+            Custom metal fabrication shop in Seminole, FL. We build trailers from raw steel, repair cracked frames, and fabricate custom smokers, gates, bar railings &amp; more. Mobile welding available. Serving all of Tampa Bay.
           </p>
         </div>
 
@@ -1241,7 +1208,7 @@
           <ul class="space-y-2.5 text-arc-muted text-sm">
             <li><a href="#services" class="hover:text-arc-orange transition-colors duration-150">Custom Trailer Fabrication</a></li>
             <li><a href="#services" class="hover:text-arc-orange transition-colors duration-150">Trailer Repair &amp; Frame Work</a></li>
-            <li><a href="#services" class="hover:text-arc-orange transition-colors duration-150">Buy &amp; Sell Used Trailers</a></li>
+            <li><a href="#services" class="hover:text-arc-orange transition-colors duration-150">Van &amp; Trailer Conversions</a></li>
             <li><a href="#builds"   class="hover:text-arc-orange transition-colors duration-150">Custom Smoker Builds</a></li>
             <li><a href="#builds"   class="hover:text-arc-orange transition-colors duration-150">Bar Railings &amp; Restaurant Metal</a></li>
             <li><a href="#builds"   class="hover:text-arc-orange transition-colors duration-150">Gates, Fencing &amp; Ornamental Iron</a></li>
@@ -1265,7 +1232,7 @@
       </div>
 
       <div class="border-t border-arc-rim pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-arc-muted text-xs">
-        <div>&copy; 2026 Arc Flash Fabrication &amp; Trailer Works &nbsp;&middot;&nbsp; Pinellas Park, FL</div>
+        <div>&copy; 2026 Arc Flash Fabrication &amp; Trailer Works &nbsp;&middot;&nbsp; Seminole, FL</div>
         <div class="text-center hidden sm:block">
           Custom Trailer Fabrication Tampa Bay &nbsp;&middot;&nbsp; Metal Fabrication Shop Pinellas Park &nbsp;&middot;&nbsp; We Buy Used Trailers FL &nbsp;&middot;&nbsp; Custom Smoker &amp; Gate Fabricator
         </div>
@@ -1274,6 +1241,77 @@
     </div>
   </footer>
 
+
+  <!-- ================================================= -->
+  <!--  SCHEDULE MODAL                                    -->
+  <!-- ================================================= -->
+  <div id="schedule-modal" role="dialog" aria-modal="true" aria-label="Schedule a call">
+    <div id="modal-backdrop" onclick="closeModal()"></div>
+    <div id="modal-card">
+
+      <!-- Header -->
+      <div class="flex items-center justify-between mb-6">
+        <div>
+          <div class="text-arc-orange text-[10px] font-bold tracking-[0.2em] uppercase mb-1">Book a Time</div>
+          <h3 class="font-display font-bold text-xl text-arc-light tracking-tight">Schedule a Call with Us</h3>
+        </div>
+        <button onclick="closeModal()" aria-label="Close"
+                class="w-8 h-8 rounded-lg bg-arc-plate border border-arc-rim flex items-center justify-center text-arc-muted hover:text-arc-light hover:border-arc-orange transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-arc-orange">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <line x1="1" y1="1" x2="13" y2="13"/><line x1="13" y1="1" x2="1" y2="13"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Calendar -->
+      <div class="mb-5">
+        <div class="flex items-center justify-between mb-3">
+          <button id="cal-prev" onclick="calNav(-1)"
+                  class="w-7 h-7 rounded-lg border border-arc-rim text-arc-muted hover:text-arc-orange hover:border-arc-orange transition-colors flex items-center justify-center focus-visible:outline-none">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="8 2 4 6 8 10"/></svg>
+          </button>
+          <span id="cal-month-label" class="text-arc-light font-semibold text-sm"></span>
+          <button id="cal-next" onclick="calNav(1)"
+                  class="w-7 h-7 rounded-lg border border-arc-rim text-arc-muted hover:text-arc-orange hover:border-arc-orange transition-colors flex items-center justify-center focus-visible:outline-none">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="4 2 8 6 4 10"/></svg>
+          </button>
+        </div>
+        <!-- Day-of-week headers -->
+        <div class="grid grid-cols-7 mb-1">
+          <div class="cal-day cal-empty text-[10px] text-arc-muted font-semibold tracking-wider">Su</div>
+          <div class="cal-day cal-empty text-[10px] text-arc-muted font-semibold tracking-wider">Mo</div>
+          <div class="cal-day cal-empty text-[10px] text-arc-muted font-semibold tracking-wider">Tu</div>
+          <div class="cal-day cal-empty text-[10px] text-arc-muted font-semibold tracking-wider">We</div>
+          <div class="cal-day cal-empty text-[10px] text-arc-muted font-semibold tracking-wider">Th</div>
+          <div class="cal-day cal-empty text-[10px] text-arc-muted font-semibold tracking-wider">Fr</div>
+          <div class="cal-day cal-empty text-[10px] text-arc-muted font-semibold tracking-wider">Sa</div>
+        </div>
+        <div id="cal-grid" class="grid grid-cols-7 gap-0.5"></div>
+      </div>
+
+      <!-- Time slots -->
+      <div id="time-section" class="hidden mb-5">
+        <div class="text-arc-muted text-[10px] font-semibold tracking-[0.15em] uppercase mb-2">Pick a time <span class="text-arc-orange normal-case font-normal tracking-normal" id="time-date-label"></span></div>
+        <div class="flex flex-wrap gap-2" id="time-slots">
+          <button type="button" class="time-slot" data-time="7:00 AM">7:00 AM</button>
+          <button type="button" class="time-slot" data-time="8:00 AM">8:00 AM</button>
+          <button type="button" class="time-slot" data-time="9:00 AM">9:00 AM</button>
+          <button type="button" class="time-slot" data-time="10:00 AM">10:00 AM</button>
+          <button type="button" class="time-slot" data-time="11:00 AM">11:00 AM</button>
+          <button type="button" class="time-slot" data-time="12:00 PM">12:00 PM</button>
+          <button type="button" class="time-slot" data-time="1:00 PM">1:00 PM</button>
+          <button type="button" class="time-slot" data-time="2:00 PM">2:00 PM</button>
+        </div>
+      </div>
+
+      <!-- Confirm -->
+      <button id="modal-confirm" onclick="confirmSchedule()" disabled
+              class="btn-primary w-full text-white font-bold text-sm py-3.5 rounded-xl opacity-40 cursor-not-allowed"
+              style="transition: opacity 0.2s ease, transform 0.18s cubic-bezier(0.22,1,0.36,1), box-shadow 0.18s cubic-bezier(0.22,1,0.36,1);">
+        Confirm Time Slot
+      </button>
+    </div>
+  </div>
 
   <!-- ================================================= -->
   <!--  SCRIPTS                                           -->
@@ -1387,6 +1425,125 @@
     }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
 
     document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+    // ─── SCHEDULE MODAL ──────────────────────────────────────
+    (function () {
+      const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+      const DAYS_SHORT = ['Su','Mo','Tu','We','Th','Fr','Sa'];
+
+      let viewYear, viewMonth, selectedDate = null, selectedTime = null;
+
+      function init() {
+        const now = new Date();
+        viewYear  = now.getFullYear();
+        viewMonth = now.getMonth();
+        renderCalendar();
+      }
+
+      function renderCalendar() {
+        document.getElementById('cal-month-label').textContent = MONTHS[viewMonth] + ' ' + viewYear;
+        const grid = document.getElementById('cal-grid');
+        grid.innerHTML = '';
+
+        const today     = new Date(); today.setHours(0,0,0,0);
+        const firstDay  = new Date(viewYear, viewMonth, 1).getDay();
+        const daysInMon = new Date(viewYear, viewMonth + 1, 0).getDate();
+
+        // Blanks
+        for (let i = 0; i < firstDay; i++) {
+          const b = document.createElement('div');
+          b.className = 'cal-day cal-empty';
+          grid.appendChild(b);
+        }
+
+        for (let d = 1; d <= daysInMon; d++) {
+          const btn  = document.createElement('button');
+          const date = new Date(viewYear, viewMonth, d);
+          const isWeekend = date.getDay() === 0 || date.getDay() === 6;
+          const isPast    = date < today;
+          const key       = date.toDateString();
+          const isToday   = date.toDateString() === today.toDateString();
+          const isSel     = selectedDate && selectedDate.toDateString() === key;
+
+          btn.type = 'button';
+          btn.className = 'cal-day' +
+            (isPast || isWeekend ? ' cal-past' : '') +
+            (isToday  ? ' cal-today' : '') +
+            (isSel    ? ' cal-selected' : '');
+          btn.textContent = d;
+
+          if (!isPast && !isWeekend) {
+            btn.addEventListener('click', () => selectDate(date));
+          }
+          grid.appendChild(btn);
+        }
+
+        // Disable prev if we're in current month
+        const now = new Date();
+        document.getElementById('cal-prev').disabled =
+          viewYear === now.getFullYear() && viewMonth === now.getMonth();
+      }
+
+      function selectDate(date) {
+        selectedDate = date; selectedTime = null;
+        renderCalendar();
+        const label = date.toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric' });
+        document.getElementById('time-date-label').textContent = '— ' + label;
+        document.getElementById('time-section').classList.remove('hidden');
+        document.querySelectorAll('.time-slot').forEach(s => s.classList.remove('selected'));
+        updateConfirm();
+      }
+
+      window.calNav = function(dir) {
+        viewMonth += dir;
+        if (viewMonth > 11) { viewMonth = 0; viewYear++; }
+        if (viewMonth < 0)  { viewMonth = 11; viewYear--; }
+        renderCalendar();
+      };
+
+      // Time slot clicks
+      document.getElementById('time-slots').addEventListener('click', (e) => {
+        const slot = e.target.closest('.time-slot');
+        if (!slot) return;
+        document.querySelectorAll('.time-slot').forEach(s => s.classList.remove('selected'));
+        slot.classList.add('selected');
+        selectedTime = slot.dataset.time;
+        updateConfirm();
+      });
+
+      function updateConfirm() {
+        const btn = document.getElementById('modal-confirm');
+        const ready = selectedDate && selectedTime;
+        btn.disabled = !ready;
+        btn.style.opacity = ready ? '1' : '0.4';
+        btn.style.cursor  = ready ? 'pointer' : 'not-allowed';
+      }
+
+      window.confirmSchedule = function() {
+        if (!selectedDate || !selectedTime) return;
+        const label = selectedDate.toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric' }) + ' at ' + selectedTime;
+        document.getElementById('schedule-label').textContent = label;
+        document.getElementById('schedule-value').value = label;
+        document.getElementById('schedule-display').classList.remove('hidden');
+        closeModal();
+      };
+
+      window.openModal = function() {
+        init();
+        document.getElementById('schedule-modal').classList.add('open');
+        document.body.style.overflow = 'hidden';
+      };
+
+      window.closeModal = function() {
+        document.getElementById('schedule-modal').classList.remove('open');
+        document.body.style.overflow = '';
+      };
+
+      // Close on Escape
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeModal();
+      });
+    }());
   </script>
 
 </body>
